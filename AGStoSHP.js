@@ -29,6 +29,7 @@ function requestService(serviceUrl, serviceName) {
 			returnIdsOnly : false,
 			returnZ : false,
 			returnM : false,
+			outSR : '4326',
 			f : 'json'
 		},
 		method : 'GET',
