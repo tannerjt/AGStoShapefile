@@ -1,3 +1,8 @@
 http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/0|Congressional_Districts
 http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/1|House_Districts
 http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/2|Senate_Districts
+http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/3|Hospitals
+http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/1|Fire_Stations
+http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/7|PSAP_Boundaries
+http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/4|State_Government_Buildings
+http://navigator.state.or.us/arcgis/rest/services/Framework/Haz_GeneralMap/MapServer/1|Tsunami_Boundaries
