@@ -1,1 +1,3 @@
 http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/0|Congressional_Districts
+http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/1|House_Districts
+http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/2|Senate_Districts
