@@ -6,3 +6,4 @@ http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapS
 http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/7|PSAP_Boundaries
 http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/4|State_Government_Buildings
 http://navigator.state.or.us/arcgis/rest/services/Framework/Haz_GeneralMap/MapServer/1|Tsunami_Boundaries
+http://gis.srh.noaa.gov/arcgis/rest/services/watchwarn/MapServer/0|Current_Warnings_NOAA
