@@ -1,0 +1,24 @@
+{
+  "name": "AGStoSHP",
+  "version": "0.0.1",
+  "description": "Converts ArcGIS Server Map Service to Shapefile",
+  "main": "AGStoSHP.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ArcGIS",
+    "Server",
+    "JSON",
+    "Shapefile",
+    "Open",
+    "Download"
+  ],
+  "author": "Joshua Tanner",
+  "license": "ISC",
+  "dependencies": {
+    "esri2geo": "^0.1.3",
+    "ogr2ogr": "^0.5.1",
+    "request": "^2.49.0"
+  }
+}
