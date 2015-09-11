@@ -35,8 +35,10 @@ function requestService(serviceUrl, serviceName) {
 		method : 'GET',
 		json : true
 	}, function (err, response, body) {
-		var geojson = esrigeo(body);
+		if(err) throw err;
 		// Create geojson
+		console.log('creating', serviceName, 'geojson');
+		var geojson = esrigeo(body);
 		fs.writeFile('./output/' + serviceName + '.geojson', JSON.stringify(geojson), function (err) {
 			if(err) throw err;
 
