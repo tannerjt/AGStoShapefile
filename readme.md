@@ -4,6 +4,8 @@ This node based script will convert ArcGIS Server dynamic map services (Geoservi
 
 #Instructions
 1. Updates services.txt to include the services you wish to query
++ use format [service_endpoint]|[title]
++ example: http://test.service/arcigs/rest/flooding/MapServer/0|Flooding_Layer
 2. Navigate to the script directory in command line and call it:
 ```
     // will default to [input] : services.txt and [output] : ./output/
