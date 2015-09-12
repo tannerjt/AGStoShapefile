@@ -10,8 +10,14 @@ var q = require('q');
 var request = q.nfbind(require('request'));
 var fs = require('fs');
 
+var serviceFile = process.argv[2] || 'services.txt';
+var outDir = process.argv[3] || './output/';
+if(outDir[outDir.length - 1] !== '/') {
+	outDir += '/';
+}
+
 // Make request to each service
-fs.readFile('services.txt', function (err, data) {
+fs.readFile(serviceFile, function (err, data) {
 	if (err) throw err;
 	data.toString().split('\n').forEach(function (service) {
 		var service = service.split('|');
@@ -68,20 +74,18 @@ function requestService(serviceUrl, serviceName, totalRecords) {
 			}
 		}
 
-		console.log(allFeatures.features.length)
-
 		console.log('creating', serviceName, 'geojson');
 		var geojson = esrigeo(allFeatures);
-		fs.writeFile('./output/' + serviceName + '.geojson', JSON.stringify(geojson), function (err) {
+		fs.writeFile(outDir + serviceName + '.geojson', JSON.stringify(geojson), function (err) {
 			if(err) throw err;
 
 			// Create Shapefile
 			console.log('creating', serviceName, 'shapefile');
-			var shapefile = ogr2ogr('./output/' + serviceName + '.geojson')
+			var shapefile = ogr2ogr(outDir + serviceName + '.geojson')
 								.format('ESRI Shapefile')
 								.skipfailures();
 
-			shapefile.stream().pipe(fs.createWriteStream('./output/' + serviceName + '.zip'));
+			shapefile.stream().pipe(fs.createWriteStream(outDir + serviceName + '.zip'));
 		});
 
 	}).catch(function (err) {
