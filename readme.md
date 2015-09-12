@@ -12,5 +12,7 @@ This node based script will convert ArcGIS Server dynamic map services (Geoservi
     // node AGStoSHP.js [input txt file with services] [output directory]
     node AGStoSHP.js services_weather.txt ./weather_output/
 ```
-3. Services will be saved in the output folder as a shapefile (.zip) and geojson (.geojson)
++ Services will be saved in the output folder as a shapefile (.zip) and geojson (.geojson)
+
+
 
