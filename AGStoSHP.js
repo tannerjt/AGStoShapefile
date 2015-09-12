@@ -89,7 +89,6 @@ function requestService(serviceUrl, serviceName, totalRecords) {
 		});
 
 	}).catch(function (err) {
-		console.log(x);
 		throw err;
 	});
 }
