@@ -4,9 +4,8 @@ This node based script will convert ArcGIS Server dynamic map services (Geoservi
 
 #Instructions
 1. Updates services.txt to include the services you wish to query
-+ use format [service_endpoint]|[title]
-+ example: http://test.service/arcigs/rest/flooding/MapServer/0|Flooding_Layer
-2. Navigate to the script directory in command line and call it:
+* Navigate to the script directory in command line and call he script with node:
+
 ```
     // will default to [input] : services.txt and [output] : ./output/
     node AGStoSHP.js
@@ -14,7 +13,13 @@ This node based script will convert ArcGIS Server dynamic map services (Geoservi
     // node AGStoSHP.js [input txt file with services] [output directory]
     node AGStoSHP.js services_weather.txt ./weather_output/
 ```
+
 + Services will be saved in the output folder as a shapefile (.zip) and geojson (.geojson)
+
+```
+ for services.txt - use format [service_endpoint]|[title]
+ example: http://test.service/arcigs/rest/flooding/MapServer/0|Flooding_Layer
+```
 
 ![screen capture](./screenshot.gif)
 
