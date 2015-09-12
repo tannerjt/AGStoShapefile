@@ -14,5 +14,7 @@ This node based script will convert ArcGIS Server dynamic map services (Geoservi
 ```
 + Services will be saved in the output folder as a shapefile (.zip) and geojson (.geojson)
 
+![screen capture](./screenshot.gif)
+
 
 
