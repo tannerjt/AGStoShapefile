@@ -1,10 +1,4 @@
-http://navigator.state.or.us/arcgis/rest/services/Projects/DHS_Schools/MapServer/0|Schools
-http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/0|Congressional_Districts
-http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/1|House_Districts
-http://navigator.state.or.us/arcgis/rest/services/Projects/FYL_Districts/MapServer/2|Senate_Districts
-http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/3|Hospitals
-http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/1|Fire_Stations
-http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/7|PSAP_Boundaries
-http://navigator.state.or.us/arcgis/rest/services/Framework/Prep_GeneralMap/MapServer/4|State_Government_Buildings
-http://navigator.state.or.us/arcgis/rest/services/Framework/Haz_GeneralMap/MapServer/1|Tsunami_Boundaries
-http://gis.srh.noaa.gov/arcgis/rest/services/watchwarn/MapServer/0|Current_Warnings_NOAA
+http://igems.doi.gov/arcgis/rest/services/igems_haz/MapServer/10|Wildfires
+http://igems.doi.gov/arcgis/rest/services/igems_haz/MapServer/1|Volcanoes
+http://coast.noaa.gov/arcgis/rest/services/MarineCadastre/NorthCarolina/MapServer/0|Fishing_Hotspots
+http://navigator.state.or.us/arcgis/rest/services/Framework/Admin_Bounds_WM/MapServer/0|Oregon_City_Limits
