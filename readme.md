@@ -24,9 +24,12 @@ This node script will convert ArcGIS Server dynamic map services (Geoservices RE
     node AGStoSHP.js services_weather.txt ./weather_output/
 ```
 
+*for services.txt - use format [service_endpoint]|[title]\n.  Take note of the PIPE (|) symbol and new line.*
 ```
- for services.txt - use format [service_endpoint]|[title]
- example: http://test.service/arcigs/rest/flooding/MapServer/0|Flooding_Layer
+ //example services.txt file
+ http://test.service/arcigs/rest/flooding/MapServer/0|Flooding_Layer
+ http://test.service/arcigs/rest/flooding/MapServer/1|Earthquake_Layer
+ http://test.service/arcigs/rest/flooding/MapServer/2|Tornado_Layer
 ```
 
 ![screen capture](./screenshot.gif)
