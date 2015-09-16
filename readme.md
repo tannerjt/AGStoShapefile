@@ -1,4 +1,4 @@
-#AGStoShapefile
+#AGStoShapefile by [TannerGeo](http://tannergeo.com)
 
 This node script will convert ArcGIS Server dynamic map services (Geoservices REST API) to both a Shapefile and GeoJSON format.  This script will only export all features and is not limited to any max feature limit.  Use this tool to cache your map services as shapefiles, take the data offline, or use the geojson in your development process.  
 
