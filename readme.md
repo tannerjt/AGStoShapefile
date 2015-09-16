@@ -6,14 +6,20 @@ This node script will convert ArcGIS Server dynamic map services (Geoservices RE
 1. Updates services.txt to include the services you wish to query
 * Navigate to the script directory in command line and call with node:
 
+*You will need to first download all the depencies for this app*
+
 ```
-    // call npm install to get app dependencies
-    // this only needs to be called once
     npm install
+```
+
+*Run the script*
 ```
     // will default to [input] : services.txt and [output] : ./output/
     node AGStoSHP.js
-    // optionally you can provide input and output parameters
+```
+
+*Optionally with input and output parameters specified
+```
     // node AGStoSHP.js [input txt file with services] [output directory]
     node AGStoSHP.js services_weather.txt ./weather_output/
 ```
