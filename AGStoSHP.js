@@ -4,11 +4,13 @@
 // @services.txt format :: serviceLayerURL|layerName
 
 // Node Modules
-var esrigeo = require('esri2geo');
+var esri2geo = require('esri2geo');
 var ogr2ogr = require('ogr2ogr');
 var q = require('q');
 var request = q.nfbind(require('request'));
 var fs = require('fs');
+
+var mixin = require('./mixin');
 
 var serviceFile = process.argv[2] || 'services.txt';
 var outDir = process.argv[3] || './output/';
@@ -18,45 +20,63 @@ if(outDir[outDir.length - 1] !== '/') {
 
 // Make request to each service
 fs.readFile(serviceFile, function (err, data) {
-	if (err) throw err;
+	if (err) {
+		console.log(err);
+		throw err;
+	}
 	data.toString().split('\n').forEach(function (service) {
 		var service = service.split('|');
 		//get total number of records | assume 1000 max each request
+		var baseUrl = getBaseUrl(service[0].trim()) + '/query'
 		request({
-			url : service[0].trim() + '/query',
+			url : baseUrl,
 			qs : {
 				where : '1=1',
-				returnCountOnly : true,
+				returnIdsOnly : true,
 				f : 'json'
 			},
 			method : 'GET',
 			json : true
 		}, function (err, response, body) {
-			if(err) throw err;
-			requestService(service[0].trim(), service[1].trim(), body.count);
+			if(err) {
+				console.log(err);
+				throw err;
+			}
+			requestService(service[0].trim(), service[1].trim(), body.objectIds);
 		});
 	})
 });
 
 // Resquest JSON from AGS
 // assumption 1 = 1000 max requests on service
-// assumption 2 = objectid always auto incremented
-function requestService(serviceUrl, serviceName, totalRecords) {
+// assumption 2 = objectid always auto incremented (from startId) - NOT TRUE 
+function requestService(serviceUrl, serviceName, objectIds) {
 	var requests = [];
-	for(var i = 0 ; i < Math.ceil(totalRecords / 1000); i++) {
+
+	for(var i = 0; i < Math.ceil(objectIds.length / 100); i++) {
+		var ids = [];
+		if ( ((i + 1) * 100) < objectIds.length ) {
+			ids = objectIds.slice(i * 100, (i + 1) * 100);
+		} else {
+			ids = objectIds.slice(i * 100, objectIds.length);
+		}
+		// we need these query params
+		var reqQS = {
+			objectIds : ids.join(','),
+			geometryType : 'esriGeometryEnvelope',
+			returnGeometry : true,
+			returnIdsOnly : false,
+			outFields : '*',
+			outSR : '4326',
+			f : 'json'
+		};
+		// user provided query params
+		var userQS = getUrlVars(serviceUrl);
+		// mix one obj with another
+		var qs = mixin(userQS, reqQS);
 		var r = request({
-			url : serviceUrl + '/query',
-			qs : {
-				where : 'OBJECTID > ' +  (i * 1000) + ' and OBJECTID <= ' + ((i+1) * 1000),
-				geometryType : 'esriGeometryEnvelope',
-				returnGeometry : true,
-				returnIdsOnly : false,
-				returnZ : false,
-				returnM : false,
-				outFields : '*',
-				outSR : '4326',
-				f : 'json'
-			},
+			url : getBaseUrl(serviceUrl) + '/query',
+			qs : qs,
 			method : 'GET',
 			json : true
 		});
@@ -73,9 +93,8 @@ function requestService(serviceUrl, serviceName, totalRecords) {
 				allFeatures.features = allFeatures.features.concat(results[i].value[0].body.features);
 			}
 		}
-
 		console.log('creating', serviceName, 'geojson');
-		var geojson = esrigeo(allFeatures);
+		var geojson = esri2geo(allFeatures);
 		fs.writeFile(outDir + serviceName + '.geojson', JSON.stringify(geojson), function (err) {
 			if(err) throw err;
 
@@ -89,6 +108,31 @@ function requestService(serviceUrl, serviceName, totalRecords) {
 		});
 
 	}).catch(function (err) {
+		console.log(err);
 		throw err;
 	});
 }
+
+
+//http://stackoverflow.com/questions/4656843/jquery-get-querystring-from-url
+function getUrlVars(url)
+{
+    var vars = {}, hash;
+    var hashes = url.slice(url.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars[hash[0].toString()] = hash[1];
+    }
+    return vars;
+}
+
+// get base url for query
+function getBaseUrl(url) {
+	// remove any query params
+	var url = url.split("?")[0];
+	if((/\/$/ig).test(url)) {
+		url = url.substring(0, url.length - 1);
+	}
+	return url; 
+}	
