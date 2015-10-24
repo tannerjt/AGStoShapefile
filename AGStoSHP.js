@@ -47,8 +47,6 @@ fs.readFile(serviceFile, function (err, data) {
 });
 
 // Resquest JSON from AGS
-// assumption 1 = 1000 max requests on service
-// assumption 2 = objectid always auto incremented (from startId) - NOT TRUE 
 function requestService(serviceUrl, serviceName, objectIds) {
 	var requests = [];
 

@@ -1,4 +1,3 @@
 http://igems.doi.gov/arcgis/rest/services/igems_haz/MapServer/10|Wildfires
 http://igems.doi.gov/arcgis/rest/services/igems_haz/MapServer/1|Volcanoes
 http://coast.noaa.gov/arcgis/rest/services/MarineCadastre/NorthCarolina/MapServer/0|Fishing_Hotspots
-http://navigator.state.or.us/arcgis/rest/services/Framework/Admin_Bounds_WM/MapServer/0|Oregon_City_Limits
