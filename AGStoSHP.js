@@ -4,7 +4,6 @@
 // @services.txt format :: serviceLayerURL|layerName
 
 // Node Modules
-var esri2geo = require('esri2geo');
 var ogr2ogr = require('ogr2ogr');
 var q = require('q');
 var request = q.nfbind(require('request'));
@@ -93,18 +92,30 @@ function requestService(serviceUrl, serviceName, objectIds) {
 				allFeatures.features = allFeatures.features.concat(results[i].value[0].body.features);
 			}
 		}
-		console.log('creating', serviceName, 'geojson');
-		var geojson = esri2geo(allFeatures);
-		fs.writeFile(outDir + serviceName + '.geojson', JSON.stringify(geojson), function (err) {
+		console.log('creating', serviceName, 'json');
+		var json = allFeatures;
+		fs.writeFile(outDir + serviceName + '.json', JSON.stringify(json), function (err) {
 			if(err) throw err;
+			// Create Geojson
+			console.log('creating', serviceName, 'geojson');
+			var ogr = ogr2ogr(outDir + serviceName + '.json')
+				.skipfailures();
 
-			// Create Shapefile
-			console.log('creating', serviceName, 'shapefile');
-			var shapefile = ogr2ogr(outDir + serviceName + '.geojson')
-								.format('ESRI Shapefile')
-								.skipfailures();
+			ogr.exec(function (er, data) {
+				if (er) console.log(er);
 
-			shapefile.stream().pipe(fs.createWriteStream(outDir + serviceName + '.zip'));
+				fs.writeFile(outDir + serviceName + '.geojson', JSON.stringify(data), function (err) {
+					// Create Shapefile once geojson written
+					if (er) console.log(er);
+					console.log('creating', serviceName, 'shapefile');
+					var shapefile = ogr2ogr(outDir + serviceName + '.geojson')
+						.format('ESRI Shapefile')
+						.skipfailures();
+
+					shapefile.stream().pipe(fs.createWriteStream(outDir + serviceName + '.zip'));
+				});
+			});
+
 		});
 
 	}).catch(function (err) {
