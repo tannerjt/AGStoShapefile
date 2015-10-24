@@ -1,7 +1,9 @@
 // @Author: Joshua Tanner
-// @Date: 12/8/2014
-// @Description: Easy way to create shapefiles from ArcGIS Server services
+// @Date: 12/8/2014 (created)
+// @Description: Easy way to create shapefiles (and geojson, geoservices json) 
+//               from ArcGIS Server services
 // @services.txt format :: serviceLayerURL|layerName
+// @githubURL : https://github.com/tannerjt/AGStoShapefile
 
 // Node Modules
 var ogr2ogr = require('ogr2ogr');
@@ -9,6 +11,8 @@ var q = require('q');
 var request = q.nfbind(require('request'));
 var fs = require('fs');
 
+// ./mixin.js
+// merge user query params with default
 var mixin = require('./mixin');
 
 var serviceFile = process.argv[2] || 'services.txt';
@@ -124,8 +128,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 
 
 //http://stackoverflow.com/questions/4656843/jquery-get-querystring-from-url
-function getUrlVars(url)
-{
+function getUrlVars(url) {
     var vars = {}, hash;
     var hashes = url.slice(url.indexOf('?') + 1).split('&');
     for(var i = 0; i < hashes.length; i++)
