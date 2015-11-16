@@ -1,3 +1,4 @@
+// @author: Joshua Tanner
 // mixin.js
 // mixin supplied object params with an
 // exisiting object
