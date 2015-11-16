@@ -3,7 +3,7 @@
 AGStoShapefile is a node.js script that will convert Esri map services (Geoservices REST API) to Shapefile, EsriJSON and GeoJSON formats.  This script will export all features and is not limited to max feature limits.  AGStoShapefile can be used to cache your map services, store data for offline viewing, or used to build applications using a more simple GeJSON format.
 
 #Dependencies
-1.You will need to install [node.js](https://nodejs.org/en/) with NPM.
+1. You will need to install [node.js](https://nodejs.org/en/) with NPM.
 
 #Instructions
 1. Updates services.txt to include the services you wish to query
