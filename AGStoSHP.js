@@ -1,6 +1,6 @@
 // @Author: Joshua Tanner
 // @Date: 12/8/2014 (created)
-// @Description: Easy way to create shapefiles (and geojson, geoservices json) 
+// @Description: Easy way to create shapefiles (and geojson, geoservices json)
 //               from ArcGIS Server services
 // @services.txt format :: serviceLayerURL|layerName
 // @githubURL : https://github.com/tannerjt/AGStoShapefile
@@ -10,6 +10,7 @@ var ogr2ogr = require('ogr2ogr');
 var q = require('q');
 var request = q.nfbind(require('request'));
 var fs = require('fs');
+var queryString = require('query-string');
 
 // ./mixin.js
 // merge user query params with default
@@ -30,17 +31,14 @@ fs.readFile(serviceFile, function (err, data) {
 	data.toString().split('\n').forEach(function (service) {
 		var service = service.split('|');
 		//get total number of records | assume 1000 max each request
-		var baseUrl = getBaseUrl(service[0].trim()) + '/query'
+		if(service[0].split('').length == 0) return;
+		var baseUrl = getBaseUrl(service[0].trim()) + '/query';
 		request({
-			url : baseUrl,
-			qs : {
-				where : '1=1',
-				returnIdsOnly : true,
-				f : 'json'
-			},
+			url : baseUrl + "/?where=1=1&returnIdsOnly=true&f=json",
 			method : 'GET',
 			json : true
 		}, function (err, response, body) {
+			var err = err || body.error;
 			if(err) {
 				console.log(err);
 				throw err;
@@ -75,9 +73,10 @@ function requestService(serviceUrl, serviceName, objectIds) {
 		var userQS = getUrlVars(serviceUrl);
 		// mix one obj with another
 		var qs = mixin(userQS, reqQS);
+		var qs = queryString.stringify(qs);
+		var url = decodeURIComponent(getBaseUrl(serviceUrl) + '/query/?' + qs);
 		var r = request({
-			url : getBaseUrl(serviceUrl) + '/query',
-			qs : qs,
+			url : url,
 			method : 'GET',
 			json : true
 		});
@@ -86,7 +85,6 @@ function requestService(serviceUrl, serviceName, objectIds) {
 	};
 
 	q.allSettled(requests).then(function (results) {
-		var allFeatures = null;
 		for(var i = 0; i < results.length; i++) {
 			if(i == 0) {
 				allFeatures = results[i].value[0].body;
@@ -146,5 +144,5 @@ function getBaseUrl(url) {
 	if((/\/$/ig).test(url)) {
 		url = url.substring(0, url.length - 1);
 	}
-	return url; 
-}	
+	return url;
+}

@@ -19,7 +19,8 @@
   "dependencies": {
     "esri2geo": "^0.1.3",
     "ogr2ogr": "^0.5.1",
-    "request": "^2.49.0",
-    "q" : "^1.4.1"
+    "q": "^1.4.1",
+    "query-string": "^3.0.0",
+    "request": "^2.49.0"
   }
 }

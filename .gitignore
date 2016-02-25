@@ -1,5 +1,6 @@
 #ignore node modules
 node_modules/
-#output/*.zip
-#output/*.geojson
+output/*.zip
+output/*.geojson
+output/*.json
 services/
