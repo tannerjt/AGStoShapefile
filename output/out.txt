@@ -1,1 +1,0 @@
-Temporary folder for output of AGStoSHP.js

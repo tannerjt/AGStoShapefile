@@ -1,3 +1,1 @@
-http://igems.doi.gov/arcgis/rest/services/igems_haz/MapServer/10|Wildfires
-http://igems.doi.gov/arcgis/rest/services/igems_haz/MapServer/1|Volcanoes
-http://coast.noaa.gov/arcgis/rest/services/MarineCadastre/NorthCarolina/MapServer/0|Fishing_Hotspots
+http://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/Wildfire_Activity/MapServer/0|Active_Fires
