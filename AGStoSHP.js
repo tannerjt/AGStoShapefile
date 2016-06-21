@@ -89,6 +89,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 			if(i == 0) {
 				allFeatures = results[i].value[0].body;
 			} else {
+				if(!allFeatures.features) return;
 				allFeatures.features = allFeatures.features.concat(results[i].value[0].body.features);
 			}
 		}
