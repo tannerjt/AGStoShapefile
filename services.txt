@@ -1,1 +1,1 @@
-http://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/Wildfire_Activity/MapServer/0|Active_Fires
+http://216.110.207.61/arcgis/rest/services/BaseMap/MapServer/8|wasco

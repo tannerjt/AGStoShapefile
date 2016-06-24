@@ -11,6 +11,11 @@ var q = require('q');
 var request = q.nfbind(require('request'));
 var fs = require('fs');
 var queryString = require('query-string');
+var winston = require('winston');
+
+// Setup logging with winston
+winston.level = 'debug';
+// winston.add(winston.transports.File, {filename: './logfile.log'});
 
 // ./mixin.js
 // merge user query params with default
@@ -25,7 +30,7 @@ if(outDir[outDir.length - 1] !== '/') {
 // Make request to each service
 fs.readFile(serviceFile, function (err, data) {
 	if (err) {
-		console.log(err);
+		winston.info(err);
 		throw err;
 	}
 	data.toString().split('\n').forEach(function (service) {
@@ -40,7 +45,7 @@ fs.readFile(serviceFile, function (err, data) {
 		}, function (err, response, body) {
 			var err = err || body.error;
 			if(err) {
-				console.log(err);
+				winston.info(err);
 				throw err;
 			}
 			requestService(service[0].trim(), service[1].trim(), body.objectIds);
@@ -93,22 +98,22 @@ function requestService(serviceUrl, serviceName, objectIds) {
 				allFeatures.features = allFeatures.features.concat(results[i].value[0].body.features);
 			}
 		}
-		console.log('creating', serviceName, 'json');
+		winston.info('creating', serviceName, 'json');
 		var json = allFeatures;
 		fs.writeFile(outDir + serviceName + '.json', JSON.stringify(json), function (err) {
 			if(err) throw err;
 			// Create Geojson
-			console.log('creating', serviceName, 'geojson');
+			winston.info('creating', serviceName, 'geojson');
 			var ogr = ogr2ogr(outDir + serviceName + '.json')
 				.skipfailures();
 
 			ogr.exec(function (er, data) {
-				if (er) console.log(er);
+				if (er) winston.info(er);
 
 				fs.writeFile(outDir + serviceName + '.geojson', JSON.stringify(data), function (err) {
 					// Create Shapefile once geojson written
-					if (er) console.log(er);
-					console.log('creating', serviceName, 'shapefile');
+					if (er) winston.info(er);
+					winston.info('creating', serviceName, 'shapefile');
 					var shapefile = ogr2ogr(outDir + serviceName + '.geojson')
 						.format('ESRI Shapefile')
 						.skipfailures();
@@ -120,7 +125,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 		});
 
 	}).catch(function (err) {
-		console.log(err);
+		winston.info(err);
 		throw err;
 	});
 }
