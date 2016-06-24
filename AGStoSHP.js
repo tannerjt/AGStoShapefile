@@ -9,6 +9,7 @@
 var ogr2ogr = require('ogr2ogr');
 var q = require('q');
 var request = q.nfbind(require('request'));
+var objectstream = require('objectstream');
 var fs = require('fs');
 var queryString = require('query-string');
 var winston = require('winston');
@@ -35,7 +36,6 @@ fs.readFile(serviceFile, function (err, data) {
 	}
 	data.toString().split('\n').forEach(function (service) {
 		var service = service.split('|');
-		//get total number of records | assume 1000 max each request
 		if(service[0].split('').length == 0) return;
 		var baseUrl = getBaseUrl(service[0].trim()) + '/query';
 		request({
@@ -55,15 +55,26 @@ fs.readFile(serviceFile, function (err, data) {
 
 // Resquest JSON from AGS
 function requestService(serviceUrl, serviceName, objectIds) {
+	objectIds.sort();
+	winston.info('Number of features for service: ', objectIds.length);
+	winston.info('Getting chunks of 100 features...');
 	var requests = [];
 
 	for(var i = 0; i < Math.ceil(objectIds.length / 100); i++) {
 		var ids = [];
 		if ( ((i + 1) * 100) < objectIds.length ) {
-			ids = objectIds.slice(i * 100, (i + 1) * 100);
+			ids = objectIds.slice(i * 100, (i * 100) + 100);
 		} else {
-			ids = objectIds.slice(i * 100, objectIds.length);
+			ids = objectIds.slice(i * 100, objectIds[objectIds.length-1]);
 		}
+
+		if(ids[0] !== undefined) {
+			winston.info('query ->', (i * 100) + 100 , 'out of', objectIds.length);
+		} else {
+			winston.info('wait for requests to settle...');
+			continue;
+		}
+
 		// we need these query params
 		var reqQS = {
 			objectIds : ids.join(','),
@@ -90,38 +101,39 @@ function requestService(serviceUrl, serviceName, objectIds) {
 	};
 
 	q.allSettled(requests).then(function (results) {
+		winston.info('all requests settled');
 		for(var i = 0; i < results.length; i++) {
 			if(i == 0) {
 				allFeatures = results[i].value[0].body;
 			} else {
-				if(!allFeatures.features) return;
 				allFeatures.features = allFeatures.features.concat(results[i].value[0].body.features);
 			}
 		}
 		winston.info('creating', serviceName, 'json');
 		var json = allFeatures;
-		fs.writeFile(outDir + serviceName + '.json', JSON.stringify(json), function (err) {
-			if(err) throw err;
-			// Create Geojson
-			winston.info('creating', serviceName, 'geojson');
-			var ogr = ogr2ogr(outDir + serviceName + '.json')
+
+		//esri json
+		winston.info('Creating Esri JSON');
+		var stream = fs.createWriteStream(outDir + serviceName + '.json');
+		var objstream = objectstream.createSerializeStream(stream);
+		objstream.write(json);
+		objstream.end();
+
+		//geojson
+		winston.info('Creating GeoJSON');
+		var stream = fs.createWriteStream(outDir + serviceName + '.geojson');
+		var objstream = objectstream.createSerializeStream(stream);
+		var ogr = ogr2ogr(outDir + serviceName + '.json')
+			.skipfailures();
+		ogr.exec(function (er, data) {
+			if (er) winston.info(er);
+			objstream.write(data);
+			objstream.end();
+			winston.info('Creating Shapefile');
+			var shapefile = ogr2ogr(outDir + serviceName + '.geojson')
+				.format('ESRI Shapefile')
 				.skipfailures();
-
-			ogr.exec(function (er, data) {
-				if (er) winston.info(er);
-
-				fs.writeFile(outDir + serviceName + '.geojson', JSON.stringify(data), function (err) {
-					// Create Shapefile once geojson written
-					if (er) winston.info(er);
-					winston.info('creating', serviceName, 'shapefile');
-					var shapefile = ogr2ogr(outDir + serviceName + '.geojson')
-						.format('ESRI Shapefile')
-						.skipfailures();
-
-					shapefile.stream().pipe(fs.createWriteStream(outDir + serviceName + '.zip'));
-				});
-			});
-
+			shapefile.stream().pipe(fs.createWriteStream(outDir + serviceName + '.zip'));
 		});
 
 	}).catch(function (err) {
