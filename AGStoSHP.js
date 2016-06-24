@@ -38,8 +38,20 @@ fs.readFile(serviceFile, function (err, data) {
 		var service = service.split('|');
 		if(service[0].split('').length == 0) return;
 		var baseUrl = getBaseUrl(service[0].trim()) + '/query';
+
+		var reqQS = {
+			where: '1=1',
+			returnIdsOnly: true,
+			f: 'json'
+		};
+		var userQS = getUrlVars(service[0].trim());
+		// mix one obj with another
+		var qs = mixin(userQS, reqQS);
+		var qs = queryString.stringify(qs);
+		var url = decodeURIComponent(getBaseUrl(baseUrl) + '/query/?' + qs);
+
 		request({
-			url : baseUrl + "/?where=1=1&returnIdsOnly=true&f=json",
+			url : url,
 			method : 'GET',
 			json : true
 		}, function (err, response, body) {
@@ -69,7 +81,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 		}
 
 		if(ids[0] !== undefined) {
-			winston.info('query ->', (i * 100) + 100 , 'out of', objectIds.length);
+			winston.info('query ->', (i * 100) , 'out of', objectIds.length);
 		} else {
 			winston.info('wait for requests to settle...');
 			continue;
