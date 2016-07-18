@@ -7,6 +7,7 @@
 
 // Node Modules
 var ogr2ogr = require('ogr2ogr');
+var esri2geo = require('esri2geo');
 var q = require('q');
 var request = q.nfbind(require('request'));
 var objectstream = require('objectstream');
@@ -114,6 +115,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 
 	q.allSettled(requests).then(function (results) {
 		winston.info('all requests settled');
+		var allFeatures;
 		for(var i = 0; i < results.length; i++) {
 			if(i == 0) {
 				allFeatures = results[i].value[0].body;
@@ -135,13 +137,16 @@ function requestService(serviceUrl, serviceName, objectIds) {
 		winston.info('Creating GeoJSON');
 		var stream = fs.createWriteStream(outDir + serviceName + '.geojson');
 		var objstream = objectstream.createSerializeStream(stream);
-		var ogr = ogr2ogr(outDir + serviceName + '.json')
-			.skipfailures();
-		ogr.exec(function (er, data) {
-			if (er) winston.info(er);
+		esri2geo(json, function (err, data) {
+			if(err) {
+				throw(err);
+				winston.info('Error converting esri json to geojson');
+				return;
+			}
 			objstream.write(data);
 			objstream.end();
 			winston.info('Creating Shapefile');
+			//shapefile
 			var shapefile = ogr2ogr(outDir + serviceName + '.geojson')
 				.format('ESRI Shapefile')
 				.skipfailures();
