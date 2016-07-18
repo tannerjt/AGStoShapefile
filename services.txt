@@ -1,1 +1,2 @@
-http://216.110.207.61/arcgis/rest/services/BaseMap/MapServer/8|wasco
+https://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/NDFD_Precipitation/MapServer/2|Percipitation
+https://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/Wildfire_Activity/MapServer/0|WildFire
