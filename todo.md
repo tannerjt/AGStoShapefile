@@ -6,3 +6,5 @@
 
 2. JS Linting
 3. Add testing
+4. Handle large datasets with streaming
+5. Make NPM module
