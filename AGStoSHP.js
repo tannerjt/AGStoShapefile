@@ -78,7 +78,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 		if ( ((i + 1) * 100) < objectIds.length ) {
 			ids = objectIds.slice(i * 100, (i * 100) + 100);
 		} else {
-			ids = objectIds.slice(i * 100, objectIds[objectIds.length-1]);
+			ids = objectIds.slice(i * 100, objectIds[objectIds.length]);
 		}
 
 		if(ids[0] !== undefined) {
