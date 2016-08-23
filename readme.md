@@ -38,5 +38,7 @@ AGStoShapefile is a node.js script that will convert Esri map services (Geoservi
 
 ![screen capture](./screenshot.gif)
 
+## Known Limitations
 
+Very large datasets have been known to run into problems with memory allocation.  [kramertamas](https://github.com/kramertamas) has added some great modifications put into a separate branch *bigdata*.  Please use this branch if you run into issues with larger datasets.
 
