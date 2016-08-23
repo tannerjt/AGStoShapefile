@@ -147,8 +147,9 @@ function requestService(serviceUrl, serviceName, objectIds) {
 			objstream.end();
 			winston.info('Creating Shapefile');
 			//shapefile
-			var shapefile = ogr2ogr(outDir + serviceName + '.geojson')
+			var shapefile = ogr2ogr(data)
 				.format('ESRI Shapefile')
+				.options(['-nln', serviceName])
 				.skipfailures();
 			shapefile.stream().pipe(fs.createWriteStream(outDir + serviceName + '.zip'));
 		});
