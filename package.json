@@ -1,5 +1,6 @@
 {
   "name": "AGStoSHP",
+  "engines" : { "node" : ">=6.0 <7.0" },
   "version": "0.0.1",
   "description": "Converts ArcGIS Server Map Service to Shapefile",
   "main": "AGStoSHP.js",
