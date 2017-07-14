@@ -38,7 +38,7 @@ fs.readFile(serviceFile, function (err, data) {
 	data.toString().split('\n').forEach(function (service) {
 		var service = service.split('|');
 		if(service[0].split('').length == 0) return;
-		var baseUrl = getBaseUrl(service[0].trim()) + '/query';
+		var baseUrl = getBaseUrl(service[0].trim());
 
 		var reqQS = {
 			where: '1=1',
