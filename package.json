@@ -1,6 +1,8 @@
 {
   "name": "AGStoSHP",
-  "engines" : { "node" : ">=6.0 <7.0" },
+  "engines": {
+    "node": ">=6.0 <7.0"
+  },
   "version": "0.0.1",
   "description": "Converts ArcGIS Server Map Service to Shapefile",
   "main": "AGStoSHP.js",
@@ -18,12 +20,16 @@
   "author": "Joshua Tanner",
   "license": "ISC",
   "dependencies": {
+    "JSONStream": "^1.3.2",
     "esri2geo": "^0.1.3",
-    "objectstream": "0.0.4",
+    "geojson-stream": "0.0.1",
+    "lodash": "^4.17.4",
+    "lowdb": "^1.0.0",
     "ogr2ogr": "^0.5.1",
     "q": "^1.4.1",
     "query-string": "^3.0.0",
     "request": "^2.49.0",
+    "terraformer-arcgis-parser": "^1.0.5",
     "winston": "^2.2.0"
   }
 }

@@ -6,18 +6,22 @@
 // @githubURL : https://github.com/tannerjt/AGStoShapefile
 
 // Node Modules
-var ogr2ogr = require('ogr2ogr');
-var esri2geo = require('esri2geo');
-var q = require('q');
-var request = q.nfbind(require('request'));
-var objectstream = require('objectstream');
-var fs = require('fs');
-var queryString = require('query-string');
-var winston = require('winston');
+const fs = require('fs');
+const q = require('q');
+const request = q.nfbind(require('request'));
+const _ = require('lodash');
+const ogr2ogr = require('ogr2ogr');
+const TerraformerArcGIS = require('terraformer-arcgis-parser');
+const geojsonStream = require('geojson-stream');
+const JSONStream = require('JSONStream');
 
-// Setup logging with winston
-winston.level = 'debug';
-// winston.add(winston.transports.File, {filename: './logfile.log'});
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
+const queryString = require('query-string');
+
+const datename = Date.now();
+const adapter = new FileSync(`./output/${datename}.json`);
+const db = low(adapter);
 
 // ./mixin.js
 // merge user query params with default
@@ -29,17 +33,14 @@ if(outDir[outDir.length - 1] !== '/') {
 	outDir += '/';
 }
 
-// Make request to each service
 fs.readFile(serviceFile, function (err, data) {
 	if (err) {
-		winston.info(err);
 		throw err;
 	}
 	data.toString().split('\n').forEach(function (service) {
 		var service = service.split('|');
 		if(service[0].split('').length == 0) return;
 		var baseUrl = getBaseUrl(service[0].trim());
-
 		var reqQS = {
 			where: '1=1',
 			returnIdsOnly: true,
@@ -58,7 +59,6 @@ fs.readFile(serviceFile, function (err, data) {
 		}, function (err, response, body) {
 			var err = err || body.error;
 			if(err) {
-				winston.info(err);
 				throw err;
 			}
 			requestService(service[0].trim(), service[1].trim(), body.objectIds);
@@ -69,8 +69,8 @@ fs.readFile(serviceFile, function (err, data) {
 // Resquest JSON from AGS
 function requestService(serviceUrl, serviceName, objectIds) {
 	objectIds.sort();
-	winston.info('Number of features for service: ', objectIds.length);
-	winston.info('Getting chunks of 100 features...');
+	console.log('Number of features for service: ', objectIds.length);
+	console.log('Getting chunks of 100 features...');
 	var requests = [];
 
 	for(var i = 0; i < Math.ceil(objectIds.length / 100); i++) {
@@ -82,9 +82,9 @@ function requestService(serviceUrl, serviceName, objectIds) {
 		}
 
 		if(ids[0] !== undefined) {
-			winston.info('query ->', (i * 100) , 'out of', objectIds.length);
+			console.log('query ->', (i * 100) , 'out of', objectIds.length);
 		} else {
-			winston.info('wait for requests to settle...');
+			console.log('wait for requests to settle...');
 			continue;
 		}
 
@@ -114,48 +114,62 @@ function requestService(serviceUrl, serviceName, objectIds) {
 	};
 
 	q.allSettled(requests).then(function (results) {
-		winston.info('all requests settled');
-		var allFeatures;
-		for(var i = 0; i < results.length; i++) {
-			if(i == 0) {
-				allFeatures = results[i].value[0].body;
-			} else {
-				allFeatures.features = allFeatures.features.concat(results[i].value[0].body.features);
-			}
-		}
-		winston.info('creating', serviceName, 'json');
-		var json = allFeatures;
+		console.log('all requests settled');
 
-		//esri json
-		winston.info('Creating Esri JSON');
-		var stream = fs.createWriteStream(outDir + serviceName + '.json');
-		var objstream = objectstream.createSerializeStream(stream);
-		objstream.write(json);
-		objstream.end();
-
-		//geojson
-		winston.info('Creating GeoJSON');
-		var stream = fs.createWriteStream(outDir + serviceName + '.geojson');
-		var objstream = objectstream.createSerializeStream(stream);
-		esri2geo(json, function (err, data) {
-			if(err) {
-				throw(err);
-				winston.info('Error converting esri json to geojson');
+		_.each(results, (result, idx) => {
+			if(!result || !result.value) {
+				console.log('server returned no result')
+				return
+			} else if (result.value[0].statusCode !== 200) {
+				console.warn('server returned no result', result.value[0].statusCode);
+				return;
+			} else if (!result.value[0].body || !result.value[0].body.features) {
+				console.warn('no result set returned');
 				return;
 			}
-			objstream.write(data);
-			objstream.end();
-			winston.info('Creating Shapefile');
-			//shapefile
-			var shapefile = ogr2ogr(data)
-				.format('ESRI Shapefile')
-				.options(['-nln', serviceName])
-				.skipfailures();
-			shapefile.stream().pipe(fs.createWriteStream(outDir + serviceName + '.zip'));
+			if(idx == 0) {
+				db.defaults(result.value[0].body)
+					.write();
+			} else {
+				db.get('features')
+					.push(...result.value[0].body.features)
+					.write();
+			}
 		});
 
+		const featureStream = JSONStream.parse('features.*', convert);
+		const outfile = fs.createWriteStream(`./output/${datename}.geojson`);
+		const infile = fs.createReadStream(`./output/${datename}.json`);
+
+		infile.on('end', () => {
+			buildShapefile();
+		});
+
+		infile.pipe(featureStream)
+			.pipe(geojsonStream.stringify())
+			.pipe(outfile);
+
+		function convert (feature) {
+			const gj = {
+	  		  type: 'Feature',
+	  		  properties: feature.attributes,
+	  		  geometry: TerraformerArcGIS.parse(feature.geometry)
+	  		}
+	  		return gj
+		}
+
+		function buildShapefile () {
+			//shapefile
+			var shapefile = ogr2ogr(`./output/${datename}.geojson`)
+				.format('ESRI Shapefile')
+				.options(['-nln', datename])
+				.skipfailures()
+				.stream();
+			shapefile.pipe(fs.createWriteStream(`./output/${datename}.zip`));
+		}
+
 	}).catch(function (err) {
-		winston.info(err);
+		console.log(err);
 		throw err;
 	});
 }

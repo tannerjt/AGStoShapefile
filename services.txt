@@ -1,2 +1,1 @@
-https://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/NDFD_Precipitation/MapServer/2|Percipitation
-https://tmservices1.esri.com/arcgis/rest/services/LiveFeeds/Wildfire_Activity/MapServer/0|WildFire
+http://navigator.state.or.us/arcgis/rest/services/Framework/Trans_GeneralMap_WM/MapServer/3|OR_Trans
