@@ -1,6 +1,4 @@
 #ignore node modules
-node_modules/
+node_modules
 output
-output/*
-services/
-.DS_Store
+DS_Store
