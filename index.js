@@ -17,6 +17,7 @@ const JSONStream = require('JSONStream');
 const queryString = require('query-string');
 const merge2 = require('merge2');
 const rimraf = require('rimraf');
+const ogr2ogr = require('ogr2ogr');
 // ./mixin.js
 // merge user query params with default
 var mixin = require('./mixin');
@@ -164,22 +165,25 @@ function requestService(serviceUrl, serviceName, objectIds) {
 						rimraf(partialsDir, () => {
 							console.log(`${serviceName} is complete`);
 							console.log(`File Location: ${finalFilePath}`);
+							makeShape(finalFilePath)
 						});
 					})
 			});
 		}
 
-	};
+		function makeShape(geojsonPath) {
+			// todo: make optional with flag
+			const shpPath = `${outDir}/${serviceName}/${serviceName}_${Date.now()}.zip`;
+			const shpFile = fs.createWriteStream(shpPath);
+			var shapefile = ogr2ogr(geojsonPath)
+				.format('ESRI Shapefile')
+				.options(['-nln', serviceName])
+				.skipfailures()
+				.stream();
+			shapefile.pipe(shpFile);
+		}
 
-	// 	function buildShapefile () {
-	// 		//shapefile
-	// 		var shapefile = ogr2ogr(`./output/${datename}.geojson`)
-	// 			.format('ESRI Shapefile')
-	// 			.options(['-nln', datename])
-	// 			.skipfailures()
-	// 			.stream();
-	// 		shapefile.pipe(fs.createWriteStream(`./output/${datename}.zip`));
-	// 	}
+	};
 }
 
 
