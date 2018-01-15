@@ -2,8 +2,5 @@
 node_modules/
 output
 output/*
-output/*.zip
-output/*.geojson
-output/*.json
 services/
 .DS_Store
