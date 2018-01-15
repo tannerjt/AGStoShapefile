@@ -1,6 +1,8 @@
 #ignore node modules
 node_modules/
+output
 output/*.zip
 output/*.geojson
 output/*.json
 services/
+.DS_Store
