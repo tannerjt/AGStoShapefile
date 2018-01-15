@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 // @Author: Joshua Tanner
-// @Date: 12/8/2014 (created)
+// @Date: 1/15/2018
 // @Description: Easy way to convert ArcGIS Server service to GeoJSON
+//               and shapefile format.  Good for backup solution.
 // @services.txt format :: serviceLayerURL|layerName
-// @githubURL : https://github.com/tannerjt/AGStoShapefile
+// @githubURL : https://github.com/tannerjt/agsout
 
 // Node Modules
 const fs = require('fs');
