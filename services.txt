@@ -1,1 +1,4 @@
-http://navigator.state.or.us/arcgis/rest/services/Framework/Trans_GeneralMap_WM/MapServer/3|OR_Trans
+https://maps.deschutes.org/arcgis/rest/services/OpenData/CensusFD/MapServer/1|Census
+https://maps.deschutes.org/arcgis/rest/services/OpenData/PlaceFD/MapServer/3|Golf_Courses
+http://navigator.state.or.us/arcgis/rest/services/Projects/DHS_Schools/MapServer/0|Oregon_Schools
+http://navigator.state.or.us/arcgis/rest/services/Projects/DHS_Schools/MapServer/1|Attendance_Areas

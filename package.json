@@ -24,12 +24,12 @@
     "esri2geo": "^0.1.3",
     "geojson-stream": "0.0.1",
     "lodash": "^4.17.4",
-    "lowdb": "^1.0.0",
+    "merge2": "^1.2.1",
     "ogr2ogr": "^0.5.1",
-    "q": "^1.4.1",
     "query-string": "^3.0.0",
     "request": "^2.49.0",
+    "request-promise": "^4.2.2",
+    "rimraf": "^2.6.2",
     "terraformer-arcgis-parser": "^1.0.5",
-    "winston": "^2.2.0"
   }
 }
