@@ -5,9 +5,12 @@
   },
   "version": "0.0.1",
   "description": "Converts ArcGIS Server Map Service to Shapefile",
-  "main": "AGStoSHP.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "agsout": "./index.js"
   },
   "keywords": [
     "ArcGIS",
@@ -30,6 +33,6 @@
     "request": "^2.49.0",
     "request-promise": "^4.2.2",
     "rimraf": "^2.6.2",
-    "terraformer-arcgis-parser": "^1.0.5",
+    "terraformer-arcgis-parser": "^1.0.5"
   }
 }

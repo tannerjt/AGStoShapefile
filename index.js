@@ -1,7 +1,8 @@
+#!/usr/bin/env node
+
 // @Author: Joshua Tanner
 // @Date: 12/8/2014 (created)
-// @Description: Easy way to create shapefiles (and geojson, geoservices json)
-//               from ArcGIS Server services
+// @Description: Easy way to convert ArcGIS Server service to GeoJSON
 // @services.txt format :: serviceLayerURL|layerName
 // @githubURL : https://github.com/tannerjt/AGStoShapefile
 
