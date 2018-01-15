@@ -6,6 +6,9 @@
 //               and shapefile format.  Good for backup solution.
 // @services.txt format :: serviceLayerURL|layerName
 // @githubURL : https://github.com/tannerjt/agsout
+//const throttle = 5000; // ms
+
+const throttle = 0;  //optional
 
 // Node Modules
 const fs = require('fs');
@@ -125,18 +128,19 @@ function requestService(serviceUrl, serviceName, objectIds) {
 			method: 'GET',
 			json: true,
 		};
-
-		request(options)
-			.pipe(featureStream)
-			.pipe(geojsonStream.stringify())
-			.pipe(outFile)
-			.on('finish', () => {
-				completedRequests += 1;
-				console.log(`Completed ${completedRequests} / ${requests} for ${serviceName}`);
-				if(requests == completedRequests) {
-					mergeFiles();
-				}
-			});
+		setTimeout(() => {
+			request(options)
+				.pipe(featureStream)
+				.pipe(geojsonStream.stringify())
+				.pipe(outFile)
+				.on('finish', () => {
+					completedRequests += 1;
+					console.log(`Completed ${completedRequests} / ${requests} for ${serviceName}`);
+					if(requests == completedRequests) {
+						mergeFiles();
+					}
+				});
+		}, i * throttle);
 
 		function convert (feature) {
 			const gj = {
