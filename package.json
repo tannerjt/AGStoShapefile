@@ -1,5 +1,5 @@
 {
-  "name": "AGStoSHP",
+  "name": "agsout",
   "engines": {
     "node": ">=6.0 <7.0"
   },
@@ -24,6 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "JSONStream": "^1.3.2",
+    "commander": "^2.13.0",
     "esri2geo": "^0.1.3",
     "geojson-stream": "0.0.1",
     "lodash": "^4.17.4",

@@ -4,11 +4,8 @@
 // @Date: 1/15/2018
 // @Description: Easy way to convert ArcGIS Server service to GeoJSON
 //               and shapefile format.  Good for backup solution.
-// @services.txt format :: serviceLayerURL|layerName
+// @services.txt format :: serviceLayerURL|layerName|throttle(ms)
 // @githubURL : https://github.com/tannerjt/agsout
-//const throttle = 5000; // ms
-
-const throttle = 0;  //optional
 
 // Node Modules
 const fs = require('fs');
@@ -24,14 +21,18 @@ const rimraf = require('rimraf');
 const ogr2ogr = require('ogr2ogr');
 // ./mixin.js
 // merge user query params with default
-var mixin = require('./mixin');
+const mixin = require('./mixin');
+var program = require('commander');
 
-var serviceFile = process.argv[2] || 'services.txt';
-var outDir = process.argv[3] || './output/';
-if(outDir[outDir.length - 1] !== '/') {
-	outDir += '/';
-}
+program
+	.version('0.1.0')
+	.option('-o, --outdir [directory]', 'Output directory')
+	.option('-s, --services [path to txt file]', 'Text file containing service list to extract')
+	.option('-S, --shapefile', 'Optional export to shapefile')
+	.parse(process.argv);
 
+const serviceFile = program.services || 'services.txt';
+var outDir = program.outdir || './output/';
 // Remove trailing '/'
 outDir = outDir.replace(/\/$/, '');
 
@@ -52,15 +53,20 @@ fs.readFile(serviceFile, function (err, data) {
 		var userQS = getUrlVars(service[0].trim());
 		// mix one obj with another
 		var qs = mixin(userQS, reqQS);
-		var qs = queryString.stringify(qs);
+		qs = queryString.stringify(qs);
 		var url = decodeURIComponent(getBaseUrl(baseUrl) + '/query/?' + qs);
+
+		var throttle = 0;
+		if(service.length > 2) {
+			throttle = +service[2];
+		}
 
 		rp({
 			url : url,
 			method : 'GET',
 			json : true
 		}).then((body) => {
-			requestService(service[0].trim(), service[1].trim(), body.objectIds);
+			requestService(service[0].trim(), service[1].trim(), body.objectIds, throttle);
 		}).catch((err) => {
 		  console.log(err);
 		});
@@ -68,12 +74,12 @@ fs.readFile(serviceFile, function (err, data) {
 });
 
 // Resquest JSON from AGS
-function requestService(serviceUrl, serviceName, objectIds) {
+function requestService(serviceUrl, serviceName, objectIds, throttle) {
 	objectIds.sort();
-	console.log('Number of features for service: ', objectIds.length);
-	console.log('Getting chunks of 100 features...');
-	var requests = Math.ceil(objectIds.length / 100);
+	const requests = Math.ceil(objectIds.length / 100);
 	var completedRequests = 0;
+	console.log('Number of features for service: ', objectIds.length);
+	console.log(`Getting chunks of 100 features, will make ${requests} total requests`);
 
 	for(let i = 0; i < Math.ceil(objectIds.length / 100); i++) {
 		var ids = [];
@@ -84,7 +90,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 		}
 
 		// we need these query params
-		var reqQS = {
+		const reqQS = {
 			objectIds : ids.join(','),
 			geometryType : 'esriGeometryEnvelope',
 			returnGeometry : true,
@@ -94,16 +100,17 @@ function requestService(serviceUrl, serviceName, objectIds) {
 			f : 'json'
 		};
 		// user provided query params
-		var userQS = getUrlVars(serviceUrl);
+		const userQS = getUrlVars(serviceUrl);
 		// mix one obj with another
 		var qs = mixin(userQS, reqQS);
-		var qs = queryString.stringify(qs);
-		var url = decodeURIComponent(getBaseUrl(serviceUrl) + '/query/?' + qs);
+		qs = queryString.stringify(qs);
+		const url = decodeURIComponent(getBaseUrl(serviceUrl) + '/query/?' + qs);
 
 
 		const partialsDir = `${outDir}/${serviceName}/partials`;
 
 		if(i == 0) {
+			// first pass, setup folders
 			if(!fs.existsSync(`${outDir}`)) {
 				fs.mkdirSync(`${outDir}`)
 			}
@@ -128,6 +135,8 @@ function requestService(serviceUrl, serviceName, objectIds) {
 			method: 'GET',
 			json: true,
 		};
+
+		// timeout for throttle
 		setTimeout(() => {
 			request(options)
 				.pipe(featureStream)
@@ -135,7 +144,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 				.pipe(outFile)
 				.on('finish', () => {
 					completedRequests += 1;
-					console.log(`Completed ${completedRequests} / ${requests} for ${serviceName}`);
+					console.log(`Completed ${completedRequests} of ${requests} requests for ${serviceName}`);
 					if(requests == completedRequests) {
 						mergeFiles();
 					}
@@ -152,6 +161,7 @@ function requestService(serviceUrl, serviceName, objectIds) {
 		}
 
 		function mergeFiles() {
+			console.log(`Finished extracting chunks for ${serviceName}, merging files...`)
 			fs.readdir(partialsDir, (err, files) => {
 				const finalFilePath = `${outDir}/${serviceName}/${serviceName}_${Date.now()}.geojson`
 				const finalFile = fs.createWriteStream(finalFilePath);
@@ -170,13 +180,16 @@ function requestService(serviceUrl, serviceName, objectIds) {
 						rimraf(partialsDir, () => {
 							console.log(`${serviceName} is complete`);
 							console.log(`File Location: ${finalFilePath}`);
-							makeShape(finalFilePath)
+							if(program.shapefile) {
+								makeShape(finalFilePath);
+							}
 						});
 					})
 			});
 		}
 
 		function makeShape(geojsonPath) {
+			console.log(`Generating shapefile for ${serviceName}`)
 			// todo: make optional with flag
 			const shpPath = `${outDir}/${serviceName}/${serviceName}_${Date.now()}.zip`;
 			const shpFile = fs.createWriteStream(shpPath);

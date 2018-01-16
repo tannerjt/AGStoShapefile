@@ -1,1 +1,1 @@
-http://gis.charleston-sc.gov/arcgis/rest/services/External/OData_Central/MapServer/10|Public_Housing
+http://gis.charleston-sc.gov/arcgis/rest/services/External/OData_Central/MapServer/10|Public_Housing|5000
