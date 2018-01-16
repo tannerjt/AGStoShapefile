@@ -19,7 +19,7 @@ If you wish to download files as Shapefile, you will need to install the followi
 *You can install via NPM*
 
 ```
-    npm install agsout
+    npm install agsout -g
 ```
 
 *Or, optionally, download and install from local*
