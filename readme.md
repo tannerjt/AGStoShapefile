@@ -14,7 +14,7 @@ If you wish to download files as Shapefile, you will need to install the followi
 # Instructions
 
 1. Create a services.txt to include the services you wish to query
-2. Navigate to the script directory in command line and call with node:
+2. Create a directory to store the script output
 
 *You can install via NPM*
 
