@@ -1,1 +1,1 @@
-https://maps2.dcgis.dc.gov/dcgis/rest/services/DDOT/UFATrees2/MapServer/0|dc_trees|100
+http://maps.lacity.org/lahub/rest/services/Recreation_and_Parks_Department/MapServer/4|parks|100
