@@ -26,7 +26,7 @@ const mixin = require('./mixin');
 var program = require('commander');
 
 program
-	.version('0.1.0')
+	.version('1.0.2')
 	.option('-o, --outdir [directory]', 'Output directory')
 	.option('-s, --services [path to txt file]', 'Text file containing service list to extract')
 	.option('-S, --shapefile', 'Optional export to shapefile')
