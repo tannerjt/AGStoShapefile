@@ -1,1 +1,1 @@
-http://gis.charleston-sc.gov/arcgis/rest/services/External/OData_Central/MapServer/10|Public_Housing|5000
+https://maps2.dcgis.dc.gov/dcgis/rest/services/DDOT/UFATrees2/MapServer/0|dc_trees|100
