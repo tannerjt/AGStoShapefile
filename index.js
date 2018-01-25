@@ -15,6 +15,7 @@ const _ = require('lodash');
 const TerraformerArcGIS = require('terraformer-arcgis-parser');
 const geojsonStream = require('geojson-stream');
 const JSONStream = require('JSONStream');
+const CombinedStream = require('combined-stream');
 const queryString = require('query-string');
 const merge2 = require('merge2');
 const rimraf = require('rimraf');
@@ -78,7 +79,7 @@ function requestService(serviceUrl, serviceName, objectIds, throttle) {
 	objectIds.sort();
 	const requests = Math.ceil(objectIds.length / 100);
 	var completedRequests = 0;
-	console.log('Number of features for service: ', objectIds.length);
+	console.log(`Number of features for service ${serviceName}:`, objectIds.length);
 	console.log(`Getting chunks of 100 features, will make ${requests} total requests`);
 
 	for(let i = 0; i < Math.ceil(objectIds.length / 100); i++) {
@@ -166,14 +167,17 @@ function requestService(serviceUrl, serviceName, objectIds, throttle) {
 				const finalFilePath = `${outDir}/${serviceName}/${serviceName}_${Date.now()}.geojson`
 				const finalFile = fs.createWriteStream(finalFilePath);
 
-				let streams = [];
+				let streams = CombinedStream.create();
 				_.each(files, (file) => {
-					streams.push(
-						fs.createReadStream(`${partialsDir}/${file}`)
-							.pipe(JSONStream.parse('features.*'))
-					)
+					streams.append((next) => {
+						next(
+							fs.createReadStream(`${partialsDir}/${file}`)
+								.pipe(JSONStream.parse('features.*'))
+						);
+					})
 				});
-				merge2(streams)
+
+				streams
 					.pipe(geojsonStream.stringify())
 					.pipe(finalFile)
 					.on('finish', () => {
@@ -196,6 +200,7 @@ function requestService(serviceUrl, serviceName, objectIds, throttle) {
 			var shapefile = ogr2ogr(geojsonPath)
 				.format('ESRI Shapefile')
 				.options(['-nln', serviceName])
+				.timeout(120000)
 				.skipfailures()
 				.stream();
 			shapefile.pipe(shpFile);
