@@ -149,6 +149,9 @@ function requestService(serviceUrl, serviceName, objectIds, throttle) {
 					if(requests == completedRequests) {
 						mergeFiles();
 					}
+				})
+				.on('error', (err) => {
+					console.log(err);
 				});
 		}, i * throttle);
 
@@ -173,6 +176,9 @@ function requestService(serviceUrl, serviceName, objectIds, throttle) {
 						next(
 							fs.createReadStream(`${partialsDir}/${file}`)
 								.pipe(JSONStream.parse('features.*'))
+								.on('error', (err) => {
+									console.log(err);
+								})
 						);
 					})
 				});
@@ -188,6 +194,9 @@ function requestService(serviceUrl, serviceName, objectIds, throttle) {
 								makeShape(finalFilePath);
 							}
 						});
+					})
+					.on('error', (err) => {
+						console.log(err);
 					})
 			});
 		}
