@@ -4,7 +4,7 @@
     "node": ">=6.0 <7.0"
   },
   "homepage": "https://github.com/tannerjt/AGStoShapefile",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Converts ArcGIS Server Map Service to Shapefile",
   "main": "index.js",
   "scripts": {
