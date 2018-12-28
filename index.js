@@ -156,6 +156,10 @@ function requestService(serviceUrl, serviceName, objectIds, throttle) {
 		}, i * throttle);
 
 		function convert (feature) {
+			if(!feature.geometry) {
+				console.log("Feature Missing Geometry and is Omitted: ", JSON.stringify(feature))
+				return null;
+			}
 			const gj = {
 				type: 'Feature',
 				properties: feature.attributes,
