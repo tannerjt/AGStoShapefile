@@ -9,7 +9,7 @@ AGStoShapefile is a node.js script that will convert Esri map services (Geoservi
 If you wish to download files as Shapefile, you will need to install the following:
 
 1. You will need to install [node.js](https://nodejs.org/en/) with NPM. This script only runs on node versions 6.x.
-2. Install and setup GDAL [Windows](http://sandbox.idre.ucla.edu/sandbox/tutorials/installing-gdal-for-windows) - [Mac/Linux](https://www.mapbox.com/tilemill/docs/guides/gdal/)
+2. Install and setup GDAL [Windows](http://sandbox.idre.ucla.edu/sandbox/tutorials/installing-gdal-for-windows) - [Mac/Linux](https://tilemill-project.github.io/tilemill/docs/guides/gdal/)
 
 # Instructions
 
